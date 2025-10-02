@@ -1,0 +1,15 @@
+Options -MultiViews
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /api/
+
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # /api/ -> index.php
+  RewriteRule ^$ index.php [L,QSA]
+
+  # /api/lo-que-sea -> index.php?r=/lo-que-sea
+  RewriteRule ^(.+)$ index.php?r=/$1 [L,QSA]
+</IfModule>
