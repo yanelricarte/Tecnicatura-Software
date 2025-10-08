@@ -7,9 +7,6 @@ Options -MultiViews
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # /api/ -> index.php
-  RewriteRule ^$ index.php [L,QSA]
-
-  # /api/lo-que-sea -> index.php?r=/lo-que-sea
-  RewriteRule ^(.+)$ index.php?r=/$1 [L,QSA]
+  RewriteRule ^$ api.php [L,QSA]
+  RewriteRule ^(.+)$ api.php [L,QSA]
 </IfModule>

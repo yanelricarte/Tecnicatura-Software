@@ -1,0 +1,231 @@
+{
+  "info": {
+    "name": "API Gimnasio (Local)",
+    "_postman_id": "3b7e9c5f-aaaa-bbbb-cccc-000000000999",
+    "description": "Colección para probar la API del Gimnasio en XAMPP",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/"
+      }
+    },
+    {
+      "name": "GET /ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/ping"
+      }
+    },
+    {
+      "name": "GET /clientes/estado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/clientes/estado?dni={{dni}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "clientes",
+            "estado"
+          ],
+          "query": [
+            {
+              "key": "dni",
+              "value": "{{dni}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /asistencia",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/asistencia",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"dni\": \"{{dni}}\" }"
+        }
+      }
+    },
+    {
+      "name": "GET /asistencias",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/asistencias?dni={{dni}}&page=1&size=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "asistencias"
+          ],
+          "query": [
+            {
+              "key": "dni",
+              "value": "{{dni}}"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /ejercicios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/ejercicios?page=1&size=10"
+      }
+    },
+    {
+      "name": "POST /ejercicios",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/ejercicios",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nombre\":\"Remo con barra\", \"musculo\":\"espalda\" }"
+        }
+      }
+    },
+    {
+      "name": "PUT /ejercicios/{id}",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/ejercicios/1",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nombre\":\"Remo con barra (mod)\", \"musculo\":\"espalda\" }"
+        }
+      }
+    },
+    {
+      "name": "DELETE /ejercicios/{id}",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/ejercicios/1"
+      }
+    },
+    {
+      "name": "GET /rutinas?alumno_dni",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/rutinas?alumno_dni={{dni}}"
+      }
+    },
+    {
+      "name": "POST /rutinas",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/rutinas",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"alumno_dni\":\"{{dni}}\",\"profesor_id\":1,\"nombre\":\"Full Body\",\"items\":[{\"ejercicio_id\":1,\"series\":3,\"repeticiones\":10,\"orden\":1}] }"
+        }
+      }
+    },
+    {
+      "name": "GET /rutinas/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/rutinas/1"
+      }
+    },
+    {
+      "name": "PUT /rutinas/{id}",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/rutinas/1",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nombre\":\"Full Body A\",\"items\":[{\"ejercicio_id\":2,\"series\":4,\"repeticiones\":8,\"orden\":1}] }"
+        }
+      }
+    },
+    {
+      "name": "DELETE /rutinas/{id}",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/rutinas/1"
+      }
+    },
+    {
+      "name": "POST /progresos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/progresos",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"dni\":\"{{dni}}\",\"rutina_id\":1,\"ejercicio_id\":1,\"series\":3,\"repeticiones\":10,\"peso\":30 }"
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/api"
+    },
+    {
+      "key": "dni",
+      "value": "12345678"
+    }
+  ]
+}
