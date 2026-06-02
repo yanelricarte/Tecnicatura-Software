@@ -1,0 +1,15 @@
+# Dependencias
+/vendor/
+
+# Variables de entorno / config local
+.env
+*.local.php
+
+# Logs
+*.log
+
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
