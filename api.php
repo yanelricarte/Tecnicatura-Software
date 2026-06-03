@@ -16,7 +16,14 @@ if (!function_exists('str_starts_with')) {
 
 /* ---------- CORS + JSON ---------- */
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+// CORS: lista blanca de orígenes (env ALLOWED_ORIGINS, separados por coma).
+// Nunca usar '*' junto a métodos de escritura sin control.
+$allowed_origins = array_filter(array_map('trim', explode(',', getenv('ALLOWED_ORIGINS') ?: 'http://localhost')));
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin !== '' && in_array($origin, $allowed_origins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+}
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key');
 header('Access-Control-Max-Age: 86400');
@@ -37,7 +44,7 @@ define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_NAME', getenv('DB_NAME') ?: 'gimnasio');
 define('DB_CHARSET', 'utf8mb4');
 
-define('API_KEY', getenv('API_KEY') ?: 'abc123'); // auth simple (opcional)
+define('API_KEY', getenv('API_KEY') ?: ''); // configurar por entorno; sin esto la escritura queda bloqueada
 
 /* ---------- Helpers JSON/HTTP ---------- */
 const JSON_FLAGS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
@@ -99,10 +106,13 @@ function iso_now(): string
 /* ---------- Auth simple (opcional) ---------- */
 function check_api_key(): void
 {
+    // Sin API_KEY configurada no se permite escribir (evita una key por defecto pública).
+    if (API_KEY === '') json_error('API no configurada: definí la variable de entorno API_KEY para habilitar escritura', 503);
     $hdr = $_SERVER['HTTP_X_API_KEY'] ?? '';
     $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
     $candidate = $hdr ?: (preg_match('/X-API-Key\s+(.+)/', $auth, $m) ? $m[1] : '');
-    if ($candidate !== API_KEY) json_error('Unauthorized (API key inválida)', 401);
+    // hash_equals(): comparación de tiempo constante.
+    if (!hash_equals(API_KEY, $candidate)) json_error('Unauthorized (API key inválida)', 401);
 }
 
 /* ---------- DB ---------- */
@@ -116,7 +126,8 @@ function db(): mysqli
         $cx->set_charset(DB_CHARSET);
         return $cx;
     } catch (Throwable $e) {
-        json_error('No se pudo conectar a la BD', 500, [], $e->getMessage());
+        error_log('DB connect error: ' . $e->getMessage()); // detalle al log, no al cliente
+        json_error('No se pudo conectar a la BD', 500);
     }
 }
 
@@ -150,10 +161,10 @@ if ($path === $script || $path === $script . '/') {
 }
 
 
-/* ---------- Paths públicos / auth ---------- */
-$public = ['/', '/ping'];
-if (!in_array($path, $public, true)) {
-    // check_api_key(); // activar si querés auth simple
+/* ---------- Auth: requerida para métodos de escritura ---------- */
+// Las lecturas (GET) quedan abiertas; crear/editar/borrar exige API key.
+if (!in_array($method, ['GET', 'OPTIONS'], true)) {
+    check_api_key();
 }
 
 /* ========================================================================== */
@@ -419,7 +430,8 @@ if ($path === '/rutinas' && $method === 'POST') {
         json_out(['ok' => true, 'rutina_id' => $rid], 201);
     } catch (Throwable $e) {
         $cx->rollback();
-        json_error('No se pudo crear la rutina', 500, [], $e->getMessage());
+        error_log('Crear rutina error: ' . $e->getMessage()); // detalle al log, no al cliente
+        json_error('No se pudo crear la rutina', 500);
     }
 }
 if ($method === 'PUT' && preg_match('#^/rutinas/(\d+)$#', $path, $m)) {
@@ -455,7 +467,8 @@ if ($method === 'PUT' && preg_match('#^/rutinas/(\d+)$#', $path, $m)) {
         json_out(['ok' => true]);
     } catch (Throwable $e) {
         $cx->rollback();
-        json_error('No se pudo actualizar la rutina', 500, [], $e->getMessage());
+        error_log('Actualizar rutina error: ' . $e->getMessage()); // detalle al log, no al cliente
+        json_error('No se pudo actualizar la rutina', 500);
     }
 }
 if ($method === 'DELETE' && preg_match('#^/rutinas/(\d+)$#', $path, $m)) {

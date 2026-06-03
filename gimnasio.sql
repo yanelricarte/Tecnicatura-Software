@@ -66,7 +66,7 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`dni`, `nombre`, `email`, `telefono`, `membresia_vence`, `creado_en`) VALUES
-('12312312', 'Cosme', 'cosmefulano@gmail.com', '111111111', '2025-10-16', '2025-10-08 22:56:47'),
+('12312312', 'Cosme', 'cosme@example.com', '223-555-3000', '2025-10-16', '2025-10-08 22:56:47'),
 ('12345678', 'Ana Pérez', 'ana@example.com', '223-555-1000', '2025-11-07', '2025-10-06 21:27:37'),
 ('20123456', 'Luis Gómez', 'luis@example.com', '223-555-2000', '2025-10-05', '2025-10-06 21:27:37');
 
@@ -226,7 +226,7 @@ CREATE TABLE `vw_clientes_estado` (
 --
 DROP TABLE IF EXISTS `vw_asistencias_ultimas`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_asistencias_ultimas`  AS SELECT `a`.`id` AS `id`, `a`.`dni` AS `dni`, `a`.`momento` AS `momento` FROM `asistencias` AS `a` WHERE `a`.`momento` = (select max(`a2`.`momento`) from `asistencias` `a2` where `a2`.`dni` = `a`.`dni`) ;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `vw_asistencias_ultimas`  AS SELECT `a`.`id` AS `id`, `a`.`dni` AS `dni`, `a`.`momento` AS `momento` FROM `asistencias` AS `a` WHERE `a`.`momento` = (select max(`a2`.`momento`) from `asistencias` `a2` where `a2`.`dni` = `a`.`dni`) ;
 
 -- --------------------------------------------------------
 
@@ -235,7 +235,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_clientes_estado`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_clientes_estado`  AS SELECT `c`.`dni` AS `dni`, `c`.`nombre` AS `nombre`, `c`.`membresia_vence` AS `membresia_vence`, to_days(`c`.`membresia_vence`) - to_days(curdate()) AS `dias_restantes`, to_days(`c`.`membresia_vence`) - to_days(curdate()) >= 0 AS `activa` FROM `clientes` AS `c` ;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `vw_clientes_estado`  AS SELECT `c`.`dni` AS `dni`, `c`.`nombre` AS `nombre`, `c`.`membresia_vence` AS `membresia_vence`, to_days(`c`.`membresia_vence`) - to_days(curdate()) AS `dias_restantes`, to_days(`c`.`membresia_vence`) - to_days(curdate()) >= 0 AS `activa` FROM `clientes` AS `c` ;
 
 --
 -- Índices para tablas volcadas
